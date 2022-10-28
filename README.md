@@ -100,11 +100,35 @@ DoviMuxer ^
 -i zh-HK.srt ^
 -i en.srt ^
 -meta a:0:lang=eng:name="English":elng="en-US" ^
--meta s:0:lang=chi:name="Chinese Simplified":elng="zh-CN" ^
--meta s:1:lang=chi:name="Chinese Traditional (TW)":elng="zh-TW" ^
--meta s:2:lang=chi:name="Chinese Traditional (HK)":elng="zh-HK" ^
+-meta s:0:lang=chi:name="Chinese Simplified":elng="zh-Hans" ^
+-meta s:1:lang=chi:name="Chinese Traditional (TW)":elng="zh-Hant-TW" ^
+-meta s:2:lang=chi:name="Chinese Traditional (HK)":elng="zh-Hant-HK" ^
 -meta s:3:lang=chi:name="English":elng="en-US" ^
 -title "DoVi EP01" -comment "This a Test" -tool "DoviMuxer v1.0.0" output.mp4
+```
+
+# RFC 4646 language tag
+`elng` determines how the player displays the mp4 track name.
+
+Tags list: https://www.iana.org/assignments/language-subtag-registry/language-subtag-registry
+
+Here are some common tags:
+
+|  Elng   | Display Name (简体中文系统显示)  |
+|  ----  | ----  |
+| zh-CN  | 中文 |
+| zh-Hans  | 简体中文 |
+| zh-Hant  | 繁体中文 |
+| zh-Hant-TW  | 繁体中文（台湾） |
+| zh-Hant-HK  | 繁体中文（香港） |
+| en-US  | 英文 |
+| ...  | ... |
+| ...  | ... |
+
+You can also use some trick to make player show clear name. For example, different audio codecs (`Dolby Digital Plus` and `AAC`) in the same language code
+```
+elng=zh-DDP => 中文（DDP）
+elng=zh-AAC => 中文（AAC）
 ```
 
 # Apple Devices Tips
