@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +16,10 @@ namespace DoViMuxer
         public string? GlobalEncodingTool { get; set; }
         public bool GlobalHasCover { get; set; } = false;
 
-        public int Index { get; set; }
+        public int IndexOfFile { get; set; } = -1;//它在所属文件中的index
+        public int IndexOfType { get; set; } = -1;//它类型的index 第x条音轨 （在list中有意义）
         public string? FilePath { get; set; }
-        public int DVProfile { get; set; }
+        public int DVProfile { get; set; } = -1;
         public int DVComId { get; set; } = 0;
         public string? ExtendedLanguageTag { get; set; } //扩展语言标签 en-US BCP-47 tags RFC 4646
         public string? LangCode { get; set; } //ISO 639-2
@@ -40,7 +43,7 @@ namespace DoViMuxer
 
         public override string? ToString()
         {
-            return $"[{Index}]: " + ToShortString();
+            return $"[{IndexOfFile}]: " + ToShortString();
         }
 
         public string? ToShortString()
@@ -55,7 +58,8 @@ namespace DoViMuxer
                    GlobalCopyright == mediainfo.GlobalCopyright &&
                    GlobalComment == mediainfo.GlobalComment &&
                    GlobalEncodingTool == mediainfo.GlobalEncodingTool &&
-                   Index == mediainfo.Index &&
+                   IndexOfFile == mediainfo.IndexOfFile &&
+                   IndexOfType == mediainfo.IndexOfType &&
                    FilePath == mediainfo.FilePath &&
                    DVProfile == mediainfo.DVProfile &&
                    DVComId == mediainfo.DVComId &&
@@ -81,7 +85,8 @@ namespace DoViMuxer
             hash.Add(GlobalCopyright);
             hash.Add(GlobalComment);
             hash.Add(GlobalEncodingTool);
-            hash.Add(Index);
+            hash.Add(IndexOfFile);
+            hash.Add(IndexOfType);
             hash.Add(FilePath);
             hash.Add(DVProfile);
             hash.Add(DVComId);
@@ -99,6 +104,31 @@ namespace DoViMuxer
             hash.Add(DolbyVison);
             hash.Add(HDR);
             return hash.ToHashCode();
+        }
+
+        public Mediainfo() { }
+        public Mediainfo(Mediainfo m)
+        {
+            GlobalTitle = m.GlobalTitle; 
+            GlobalCopyright = m.GlobalCopyright; 
+            GlobalComment = m.GlobalComment;
+            GlobalEncodingTool = m.GlobalEncodingTool;
+            IndexOfFile = m.IndexOfFile;
+            IndexOfType = m.IndexOfType;
+            FilePath = m.FilePath;
+            DVProfile = m.DVProfile;
+            DVComId = m.DVComId;
+            LangCode = m.LangCode;
+            Name = m.Name;
+            Id = m.Id;
+            Text = m.Text;
+            BaseInfo = m.BaseInfo;
+            Bitrate = m.Bitrate;
+            Resolution = m.Resolution;
+            Fps = m.Fps;
+            Type = m.Type;
+            DolbyVison = m.DolbyVison;
+            HDR = m.HDR;
         }
     }
 }

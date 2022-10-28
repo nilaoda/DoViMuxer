@@ -71,7 +71,10 @@ namespace DoViMuxer
             {
                 foreach (var item in option.Maps)
                 {
-                    selectedTracks.AddRange(FilterByUserMap(item, dic));
+                    foreach (var t in FilterByUserMap(item, dic))
+                    {
+                        selectedTracks.Add(new Mediainfo(t));
+                    }
                 }
             }
             else
@@ -79,6 +82,9 @@ namespace DoViMuxer
                 //默认全部
                 selectedTracks.AddRange(allMediainfos);
             }
+
+            //设置每个类型自己的序号
+            SetTypeIndex(selectedTracks);
 
             //分析用户自定义meta
             if (option.Metas != null && option.Metas.Count > 0)
@@ -171,7 +177,7 @@ namespace DoViMuxer
             {
                 Utils.LogColor($"{(i == 0 ? "\r\n" : "")}Extract audio track {i}...");
                 var aTrack = selectedAudios.ElementAt(i);
-                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{aTrack.FilePath}\" -map_metadata -1 -map 0:{aTrack.Index} -c copy \"{now}_Audio{i}.{aTrack.Ext}\"", option.Debug);
+                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{aTrack.FilePath}\" -map_metadata -1 -map 0:{aTrack.IndexOfFile} -c copy \"{now}_Audio{i}.{aTrack.Ext}\"", option.Debug);
                 tmpFiles.Add($"{now}_Audio{i}.{aTrack.Ext}");
             }
 
@@ -180,7 +186,7 @@ namespace DoViMuxer
             {
                 Utils.LogColor($"{(i == 0 ? "\r\n" : "")}Extract subtile track {i}...");
                 var sTrack = selectedSubtitle.ElementAt(i);
-                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{sTrack.FilePath}\" -map_metadata -1 -map 0:{sTrack.Index} \"{now}_Subtitle{i}.srt\"", option.Debug);
+                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{sTrack.FilePath}\" -map_metadata -1 -map 0:{sTrack.IndexOfFile} \"{now}_Subtitle{i}.srt\"", option.Debug);
                 var text = File.ReadAllText($"{now}_Subtitle{i}.srt");
                 //remove font tags
                 text = TagRegex().Replace(text, "$1");
@@ -249,6 +255,19 @@ namespace DoViMuxer
             Console.WriteLine($"     Cost: {dur}");
         }
 
+        private static void SetTypeIndex(List<Mediainfo> list)
+        {
+            var vIndex = 0;
+            var aIndex = 0;
+            var sIndex = 0;
+            foreach (var item in list)
+            {
+                if (item.Type == "Video") item.IndexOfType = vIndex++;
+                else if (item.Type == "Audio") item.IndexOfType = aIndex++;
+                else if (item.Type == "Subtitle") item.IndexOfType = sIndex++;
+            }
+        }
+
         private static void SetDelayFromUser(string input, List<Mediainfo> list)
         {
             if (string.IsNullOrEmpty(input)) return;
@@ -260,10 +279,10 @@ namespace DoViMuxer
                 var _index = Convert.ToInt32(input[2..].Split(':').First());
                 var _type = firstChar switch { 'a' => "Audio", 'v' => "Video", 's' => "Subtitle", _ => "Error" };
                 if (!list.Any(l => l.Type == _type)) throw new Exception($"Can not find output type {_type}");
-                if (list.Count <= _index) throw new Exception($"Can not find output {_type} track index: {_index}");
+                if (list.Where(l => l.Type == _type).Count() <= _index) throw new Exception($"Can not find output {_type} track index: {_index}");
                 foreach (var item in list)
                 {
-                    if (item.Type == _type && list.Where(l => l.Type == _type).ToList().IndexOf(item) == _index)
+                    if (item.Type == _type && item.IndexOfType == _index)
                     {
                         item.Delay = Convert.ToInt64(input.Split(':').Last());
                         break;
@@ -292,10 +311,10 @@ namespace DoViMuxer
                 var _index = Convert.ToInt32(input[2..].Split(':').First());
                 var _type = firstChar switch { 'a' => "Audio", 'v' => "Video", 's' => "Subtitle", _ => "Error" };
                 if (!list.Any(l => l.Type == _type)) throw new Exception($"Can not find output type {_type}");
-                if (list.Count <= _index) throw new Exception($"Can not find output {_type} track index: {_index}");
+                if (list.Where(l => l.Type == _type).Count() <= _index) throw new Exception($"Can not find output {_type} track index: {_index}");
                 foreach (var item in list)
                 {
-                    if (item.Type == _type && list.Where(l => l.Type == _type).ToList().IndexOf(item) == _index) 
+                    if (item.Type == _type && item.IndexOfType == _index)
                     {
                         var parser = new ComplexParamParser(input);
                         item.LangCode = parser.GetValue("lang") ?? item.LangCode;

@@ -59,7 +59,7 @@ namespace DoViMuxer
                 var info = new Mediainfo()
                 {
                     FilePath = file,
-                    Index = index++,
+                    IndexOfFile = index++,
                     Text = TypeRegex().Match(stream.Value).Groups[2].Value.TrimEnd(),
                     Id = IdRegex().Match(stream.Value).Groups[1].Value,
                     Type = TypeRegex().Match(stream.Value).Groups[1].Value,
