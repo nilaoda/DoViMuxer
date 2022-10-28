@@ -43,7 +43,7 @@
 # 命令行选项
 ```
 Description:
-  DoViMuxer v1.0. 一个用于制作杜比视界 mp4 的命令行工具.
+  DoViMuxer. 一个用于制作杜比视界 mp4 的命令行工具.
 
 Usage:
   DoViMuxer [<output>] [options]

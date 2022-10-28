@@ -43,7 +43,7 @@ Now, DoViMuxer can read/set:
 # Command Line
 ```
 Description:
-  DoViMuxer v1.0. Tool to make Dolby Vison mp4.
+  DoViMuxer. Tool to make Dolby Vison mp4.
 
 Usage:
   DoViMuxer [<output>] [options]
