@@ -34,7 +34,7 @@ Now, DoViMuxer can read/set:
 * Global EncodingTool
 * Track Name
 * Track Language ([ISO 639-2](https://www.loc.gov/standards/iso639-2/php/code_list.php))
-* Track Extended Language Tag ([RFC 4646 language tag](https://datatracker.ietf.org/doc/rfc4646/))
+* Track Extended Language Tag ([RFC 4646 language tag](https://datatracker.ietf.org/doc/rfc4646/), Details on [unicode.org](http://unicode.org/reports/tr35/#Unicode_Language_and_Locale_Identifiers))
 
 # Command Line
 ```
@@ -90,22 +90,28 @@ Remux DoVi `ts` to `mp4` and keep meta:
 DoViMuxer -i source.ts output.mp4
 ```
 
-Mux DoVi `mp4` + `eac3` + `srt`, and set metadata:
+Advance use:
 ```
 DoviMuxer ^
 -i v.mp4 ^
 -i a.eac3 ^
--i s.srt ^
+-i zh.srt ^
+-i zh-TW.srt ^
+-i zh-HK.srt ^
+-i en.srt ^
 -meta a:0:lang=eng:name="English":elng="en-US" ^
--meta s:0:lang=chi:name="Chinese Simplified":elng="zh-Hans" ^
+-meta s:0:lang=chi:name="Chinese Simplified":elng="zh-CN" ^
+-meta s:1:lang=chi:name="Chinese Traditional (TW)":elng="zh-TW" ^
+-meta s:2:lang=chi:name="Chinese Traditional (HK)":elng="zh-HK" ^
+-meta s:3:lang=chi:name="English":elng="en-US" ^
 -title "DoVi EP01" -comment "This a Test" -tool "DoviMuxer v1.0.0" output.mp4
 ```
 
 # Apple Devices Tips
-* hevc tag must be `hvc1` or `dvh1`
-* timed text `hdlr` set to `sbtl`
-* video tracks, audio tracks and subtitle tracks in **different** alternate group
-* show name depends on extended language tag, not `udta` name.
+* HEVC tag must be `hvc1` or `dvh1`
+* Timed text `hdlr` set to `sbtl`
+* Video tracks, audio tracks and subtitle tracks in **different** alternate group
+* Show name depends on extended language tag, not `udta` name.
 
 # Todo
 * [ ] Dual layer DoVi
