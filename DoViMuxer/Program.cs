@@ -239,7 +239,7 @@ namespace DoViMuxer
                     sb.Append($" -delay {mp4Index}={track.Delay} ");
             }
 
-            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -noprog -add \"{now}.hevc.mp4#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
+            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -for-test  -noprog -add \"{now}.hevc.mp4#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
 
             Utils.LogColor("\r\nClean temp files...");
             foreach (var item in tmpFiles)
