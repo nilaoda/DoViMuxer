@@ -25,6 +25,8 @@ namespace DoViMuxer
         public string? LangCode { get; set; } //ISO 639-2
         public string? Name { get; set; }
         public long Delay { get; set; } = 0;
+        public bool Default { get; set; } = false;
+        public bool Forced { get; set; } = false;
 
         public string? Id { get; set; }
         public string? Text { get; set; }

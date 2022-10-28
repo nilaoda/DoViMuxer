@@ -176,6 +176,14 @@ namespace DoViMuxer
                     if (node != null)
                     {
                         if (ele.Type != "Video") ele.Name = node["Title"]?.GetValue<string>();
+                        if (node.ContainsKey("Default"))
+                        {
+                            ele.Default = node["Default"]!.GetValue<string>() == "Yes";
+                        }
+                        if (node.ContainsKey("Forced"))
+                        {
+                            ele.Forced = node["Forced"]!.GetValue<string>() == "Yes";
+                        }
                         if (node.ContainsKey("Delay"))
                         {
                             ele.Delay = (long)Convert.ToDouble(node["Delay"]!.GetValue<string>()) * 1000;

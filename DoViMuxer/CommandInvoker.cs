@@ -61,7 +61,7 @@ namespace DoViMuxer
 
         public static async Task<int> InvokeArgs(string[] args, Func<MyOption, Task> action)
         {
-            var rootCommand = new RootCommand("DoViMuxer v1.0. Tool to make Dolby Vison mp4.")
+            var rootCommand = new RootCommand("DoViMuxer. Tool to make Dolby Vison mp4.")
             {
                 Input, Output, Maps, Metas, Delays,
                 Cover, Comment, Copyright, Title, Tool,

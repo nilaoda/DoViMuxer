@@ -20,7 +20,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.0");
+            Console.WriteLine("DoViMuxer v1.0.1");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -218,7 +218,7 @@ namespace DoViMuxer
             for (int i = 0; i < selectedAudios.Count(); i++, mp4Index++)
             {
                 var track = selectedAudios.ElementAt(i);
-                sb.Append($" -add \"{now}_Audio{i}.{track.Ext}#1:name=:lang={track.LangCode}:group=2\" ");
+                sb.Append($" -add \"{now}_Audio{i}.{track.Ext}#1:name=:lang={track.LangCode}:group=2{(track.Default ? "" : ":disable")}\" ");
                 if (!string.IsNullOrEmpty(track.Name))
                     sb.Append($" -udta {mp4Index}:type=name:str=\"{track.Name}\" ");
                 if (!string.IsNullOrEmpty(track.ExtendedLanguageTag))
@@ -230,7 +230,7 @@ namespace DoViMuxer
             for (int i = 0; i < selectedSubtitle.Count(); i++, mp4Index++)
             {
                 var track = selectedSubtitle.ElementAt(i);
-                sb.Append($" -add \"{now}_Subtitle{i}.srt#1:name=:lang={track.LangCode}:hdlr=sbtl:group=3\" ");
+                sb.Append($" -add \"{now}_Subtitle{i}.srt#1:name=:lang={track.LangCode}:hdlr=sbtl:group=3{(track.Default ? "" : ":disable")}{(track.Forced ? ":txtflags=0xC0000000" : "")}\" ");
                 if (!string.IsNullOrEmpty(track.Name))
                     sb.Append($" -udta {mp4Index}:type=name:str=\"{track.Name}\" ");
                 if (!string.IsNullOrEmpty(track.ExtendedLanguageTag))
@@ -265,6 +265,17 @@ namespace DoViMuxer
                 if (item.Type == "Video") item.IndexOfType = vIndex++;
                 else if (item.Type == "Audio") item.IndexOfType = aIndex++;
                 else if (item.Type == "Subtitle") item.IndexOfType = sIndex++;
+            }
+            //设置默认轨道
+            if(list.Where(i=>i.Type == "Audio").All(i => !i.Default))
+            {
+                var _i = list.FindIndex(i => i.Type == "Audio");
+                if (_i != -1) { list[_i].Default = true; }
+            }
+            if (list.Where(i => i.Type == "Subtitle").All(i => !i.Default))
+            {
+                var _i = list.FindIndex(i => i.Type == "Subtitle");
+                if (_i != -1) { list[_i].Default = true; }
             }
         }
 
