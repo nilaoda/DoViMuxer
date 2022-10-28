@@ -40,40 +40,40 @@
 * 轨道 语言 ([ISO 639-2](https://www.loc.gov/standards/iso639-2/php/code_list.php))
 * 轨道 扩展语言标记 ([RFC 4646 language 标签](https://datatracker.ietf.org/doc/rfc4646/), 可以在 [unicode.org](http://unicode.org/reports/tr35/#Unicode_Language_and_Locale_Identifiers) 查看详细信息)
 
-# Command Line
+# 命令行选项
 ```
 Description:
-  DoViMuxer v1.0. Tool to make Dolby Vison mp4.
+  DoViMuxer v1.0. 一个用于制作杜比视界 mp4 的命令行工具.
 
 Usage:
   DoViMuxer [<output>] [options]
 
 Arguments:
-  <output>  File output name []
+  <output>  输出文件名 []
 
 Options:
-  -i <FILE> (REQUIRED)            Add input(s)
-  -map <file[:type[:index]]>      Select and re-order tracks. Example:
-                                    -map 0:0   Input 0, track 0
-                                    -map 0:a:0 Input 0, first audio track
-  -meta <[type:]index:key=value>  Set mp4 track metadata to output file. Example:
+  -i <FILE> (REQUIRED)            添加输入文件
+  -map <file[:type[:index]]>      轨道选择和重排序. 例如:
+                                    -map 0:0   输入 0, 轨道 0
+                                    -map 0:a:0 输入 0, 第0个音频轨道
+  -meta <[type:]index:key=value>  设置 mp4 的轨道元数据. 例如:
                                     -meta a:0:lang=eng:name="English (Original)":elng="en-US"
                                     -meta 1:lang=jpn
-                                  note: lang: ISO 639-2, elng: RFC 4646 tags
-  -delay <[type:]index:time>      Set mp4 track delay (milliseconds) to output file. Example:
+                                  注意: lang: ISO 639-2, elng: RFC 4646 tags
+  -delay <[type:]index:time>      设置 mp4 的轨道延迟 (毫秒). Example:
                                     -delay a:0:-5000
                                     -delay s:0:1000
-  -cover <FILE>                   Set mp4 conver image
-  -comment <comment>              Set mp4 comment
-  -copyright <copyright>          Set mp4 copyright
-  -title <title>                  Set mp4 title
-  -tool <tool>                    Set mp4 encoding tool
-  -ffmpeg <FILE>                  Set ffmpeg path
-  -mp4box <FILE>                  Set mp4box path
-  -mp4muxer <FILE>                Set mp4muxer path
-  -mediainfo <FILE>               Set mediainfo path
-  -y                              Overwrite [default: False]
-  --debug                         Show details [default: False]
+  -cover <FILE>                   设置 mp4 的封面图片
+  -comment <comment>              设置 mp4 的注释
+  -copyright <copyright>          设置 mp4 的版权
+  -title <title>                  设置 mp4 的标题
+  -tool <tool>                    设置 mp4 的编码工具
+  -ffmpeg <FILE>                  设置 ffmpeg 路径
+  -mp4box <FILE>                  设置 mp4box 路径
+  -mp4muxer <FILE>                设置 mp4muxer 路径
+  -mediainfo <FILE>               设置 mediainfo 路径
+  -y                              覆盖文件 [default: False]
+  --debug                         展示详细信息 [default: False]
   --version                       Show version information
   -?, -h, --help                  Show help and usage information
 ```

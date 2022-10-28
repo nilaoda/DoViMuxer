@@ -63,7 +63,7 @@ Options:
   -delay <[type:]index:time>      Set mp4 track delay (milliseconds) to output file. Example:
                                     -delay a:0:-5000
                                     -delay s:0:1000
-  -cover <FILE>                   Set mp4 conver image
+  -cover <FILE>                   Set mp4 cover image
   -comment <comment>              Set mp4 comment
   -copyright <copyright>          Set mp4 copyright
   -title <title>                  Set mp4 title
