@@ -19,7 +19,7 @@ namespace DoViMuxer
         private readonly static Option<bool> Debug = new(new string[] { "--debug" }, description: "Show details", getDefaultValue: () => false);
         private readonly static Option<bool> Yes = new(new string[] { "-y" }, description: "Overwrite", getDefaultValue: () => false);
         private readonly static Option<List<string>?> Maps = new(new string[] { "-map" }, description: "Select and re-order tracks. Example:\r\n  -map 0:0   Input 0, track 0\r\n  -map 0:a:0 Input 0, first audio track") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "file[:type[:index]]" };
-        private readonly static Option<string?> Cover = new(new string[] { "-cover" }, description: "Set mp4 conver image") { ArgumentHelpName = "FILE" };
+        private readonly static Option<string?> Cover = new(new string[] { "-cover" }, description: "Set mp4 cover image") { ArgumentHelpName = "FILE" };
         private readonly static Option<string?> Comment = new(new string[] { "-comment" }, description: "Set mp4 comment");
         private readonly static Option<string?> Copyright = new(new string[] { "-copyright" }, description: "Set mp4 copyright");
         private readonly static Option<string?> Title = new(new string[] { "-title" }, description: "Set mp4 title");
