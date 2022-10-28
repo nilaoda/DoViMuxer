@@ -266,16 +266,38 @@ namespace DoViMuxer
                 else if (item.Type == "Audio") item.IndexOfType = aIndex++;
                 else if (item.Type == "Subtitle") item.IndexOfType = sIndex++;
             }
-            //设置默认轨道
-            if(list.Where(i=>i.Type == "Audio").All(i => !i.Default))
+
+            //设置音频默认轨道
+            if (list.Where(i => i.Type == "Audio").All(i => !i.Default))
             {
                 var _i = list.FindIndex(i => i.Type == "Audio");
                 if (_i != -1) { list[_i].Default = true; }
             }
-            if (list.Where(i => i.Type == "Subtitle").All(i => !i.Default))
+            //清除多余的
+            else if (list.Where(i => i.Type == "Audio").Count(i => i.Default) > 1) 
             {
-                var _i = list.FindIndex(i => i.Type == "Subtitle");
-                if (_i != -1) { list[_i].Default = true; }
+                var _i = list.FindIndex(i => i.Type == "Audio" && i.Default);
+                if (_i != -1 && _i + 1 < list.Count) 
+                {
+                    for (int i = _i + 1; i < list.Count; i++) 
+                    {
+                        list[i].Default = false;
+                    }
+                }
+            }
+
+
+            //清除多余的字幕默认轨道
+            if (list.Where(i => i.Type == "Subtitle").Count(i => i.Default) > 1)
+            {
+                var _i = list.FindIndex(i => i.Type == "Subtitle" && i.Default);
+                if (_i != -1 && _i + 1 < list.Count)
+                {
+                    for (int i = _i + 1; i < list.Count; i++)
+                    {
+                        list[i].Default = false;
+                    }
+                }
             }
         }
 
