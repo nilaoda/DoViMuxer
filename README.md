@@ -4,7 +4,7 @@ Command line tool to make Dolby Vison mp4.
 # Features
 * Select tracks from variety media files (mp4, ts, mkv, hevc, aac, eac3...)
 * Keep metadata / track delay from source file
-* Set language and title for each track
+* Set language and name for each track
 * Set global metadata (cover, title, copyright, comment, encoding tool)
 * Accepted SDR / HDR10 / Dolby Vision Profile 5 or Profile 8
 * **Compatible with Apple devices** (ATV, iOS, iPadOS, macOS)
