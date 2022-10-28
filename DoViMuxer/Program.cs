@@ -31,6 +31,9 @@ namespace DoViMuxer
             if (!File.Exists(config.FFmpeg)) throw new FileNotFoundException("ffmpeg not found! https://ffmpeg.org/download.html");
             if (!File.Exists(config.Mediainfo)) throw new FileNotFoundException("mediainfo not found! https://mediaarea.net/en/MediaInfo/Download");
 
+            if (!Utils.CheckFFmpegDOVI(config.FFmpeg)) throw new Exception("ffmpeg version must >= 5.0! https://ffmpeg.org/download.html");
+            if (!Utils.CheckMP4Box(config.MP4Box)) throw new Exception("mp4box version must >= 2.0! https://gpac.wp.imt.fr/downloads/pac-nightly-builds/");
+
             var input = option.Inputs;
 
             if (!input.All(File.Exists))

@@ -3,12 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DoViMuxer
 {
-    internal class Utils
+    internal partial class Utils
     {
+        [GeneratedRegex("libavutil\\s+(\\d+)\\. (\\d+)\\.")]
+        private static partial Regex LibavutilRegex();
+        [GeneratedRegex("GPAC version (\\d+)\\.")]
+        private static partial Regex MP4boxRegex();
         public static async Task RunCommandAsync(string name, string arg, bool showDetail = false)
         {
             if (showDetail) LogGray($"{name} {arg}");
@@ -67,6 +72,79 @@ namespace DoViMuxer
             var envPath = Environment.GetEnvironmentVariable("PATH")?.Split(Path.PathSeparator) ??
                           Array.Empty<string>();
             return searchPath.Concat(envPath).Select(p => Path.Combine(p, name + fileExt)).FirstOrDefault(File.Exists);
+        }
+
+        /// <summary>
+        /// 检测ffmpeg是否识别杜比视界
+        /// </summary>
+        /// <returns></returns>
+        public static bool CheckFFmpegDOVI(string bin)
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = bin,
+                        Arguments = "-version",
+                        UseShellExecute = false,
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                string info = process.StandardOutput.ReadToEnd() + Environment.NewLine + process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                var match = LibavutilRegex().Match(info);
+                if (!match.Success) return false;
+                if ((Convert.ToInt32(match.Groups[1].Value) == 57 && Convert.ToInt32(match.Groups[1].Value) >= 17)
+                    || Convert.ToInt32(match.Groups[1].Value) > 57)
+                {
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 检测mp4box版本是否可用
+        /// </summary>
+        /// <returns></returns>
+        public static bool CheckMP4Box(string bin)
+        {
+            try
+            {
+                var process = new Process
+                {
+                    StartInfo = new ProcessStartInfo
+                    {
+                        FileName = bin,
+                        Arguments = "-version",
+                        UseShellExecute = false,
+                        RedirectStandardError = true,
+                        RedirectStandardOutput = true,
+                        CreateNoWindow = true
+                    }
+                };
+                process.Start();
+                string info = process.StandardOutput.ReadToEnd() + Environment.NewLine + process.StandardError.ReadToEnd();
+                process.WaitForExit();
+                var match = MP4boxRegex().Match(info);
+                if (!match.Success) return false;
+                if (Convert.ToInt32(match.Groups[1].Value) >= 2)
+                {
+                    return true;
+                }
+            }
+            catch (Exception)
+            {
+            }
+            return false;
         }
     }
 }
