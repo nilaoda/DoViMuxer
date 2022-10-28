@@ -4,8 +4,8 @@ using System.Text.RegularExpressions;
 
 namespace DoViMuxer
 {
-    [JsonSerializable(typeof(Config))]
-    internal partial class JsonContext : JsonSerializerContext { }
+    //[JsonSerializable(typeof(Config))]
+    //internal partial class JsonContext : JsonSerializerContext { }
 
     internal partial class Program
     {
@@ -154,7 +154,7 @@ namespace DoViMuxer
             {
                 //抽取封面
                 Utils.LogColor("\r\nExtract cover image...");
-                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -map 0:v:1 \"{now}.png\"", option.Debug);
+                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -map 0:v:1 -r 1 -frames 1 \"{now}.png\"", option.Debug);
                 cover = $"{now}.png";
                 tmpFiles.Add(cover);
             }
