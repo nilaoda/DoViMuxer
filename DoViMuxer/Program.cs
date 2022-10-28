@@ -157,7 +157,7 @@ namespace DoViMuxer
             {
                 //抽取封面
                 Utils.LogColor("\r\nExtract cover image...");
-                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -map 0:v:1 -r 1 -frames 1 \"{now}.png\"", option.Debug);
+                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel error -i \"{vTrack.FilePath}\" -map 0:v:1 -vframes 1 -y -f image2 -pix_fmt rgb24 \"{now}.png\"", option.Debug);
                 cover = $"{now}.png";
                 tmpFiles.Add(cover);
             }
