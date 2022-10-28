@@ -1,0 +1,21 @@
+<Project>
+
+  <PropertyGroup>
+    <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+    <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+    <StaticallyLinked Condition="$(RuntimeIdentifier.StartsWith('win'))">true</StaticallyLinked>
+    <TrimMode>full</TrimMode>
+	<TrimmerDefaultAction>link</TrimmerDefaultAction>
+	<IlcTrimMetadata>true</IlcTrimMetadata>
+	<IlcGenerateStackTraceData>true</IlcGenerateStackTraceData>
+	  <PublishAot>true</PublishAot>
+	  <StripSymbols>true</StripSymbols>
+	  <ObjCopyName Condition="'$(RuntimeIdentifier)' == 'linux-arm64'">aarch64-linux-gnu-objcopy</ObjCopyName>
+  </PropertyGroup>
+
+	<ItemGroup Condition="'$(PublishAot)' == 'true' and '$(RuntimeIdentifier)' != 'win-arm64' and '$(RuntimeIdentifier)' != 'linux-arm64'">
+		<PackageReference Include="PublishAotCompressed" Version="0.0.4" />
+	</ItemGroup>
+	
+
+</Project>
