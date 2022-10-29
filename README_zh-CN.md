@@ -63,6 +63,9 @@ Options:
   -delay <[type:]index:time>      设置 mp4 的轨道延迟 (毫秒). Example:
                                     -delay a:0:-5000
                                     -delay s:0:1000
+  -forced <[s:]index>             设置 mp4 某字幕轨道为 [Forced]. Example:
+                                    -forced s:3
+  -default <[type:]index>         设置 mp4 某音频或字幕轨道为 [Default]. Example:
   -cover <FILE>                   设置 mp4 的封面图片
   -comment <comment>              设置 mp4 的注释
   -copyright <copyright>          设置 mp4 的版权

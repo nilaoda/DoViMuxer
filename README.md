@@ -56,13 +56,18 @@ Options:
   -map <file[:type[:index]]>      Select and re-order tracks. Example:
                                     -map 0:0   Input 0, track 0
                                     -map 0:a:0 Input 0, first audio track
-  -meta <[type:]index:key=value>  Set mp4 track metadata to output file. Example:
+  -meta <[type:]index:key=value>  Set mp4 track metadata. Example:
                                     -meta a:0:lang=eng:name="English (Original)":elng="en-US"
                                     -meta 1:lang=jpn
                                   note: lang: ISO 639-2, elng: RFC 4646 tags
-  -delay <[type:]index:time>      Set mp4 track delay (milliseconds) to output file. Example:
+  -delay <[type:]index:time>      Set mp4 track delay (milliseconds). Example:
                                     -delay a:0:-5000
                                     -delay s:0:1000
+  -forced <[s:]index>             Set mp4 subtitle track to [Forced]. Example:
+                                    -forced s:3
+  -default <[type:]index>         Set mp4 audio or subtitle track to [Default]. Example:
+                                    -default s:3
+                                    -default a:1
   -cover <FILE>                   Set mp4 cover image
   -comment <comment>              Set mp4 comment
   -copyright <copyright>          Set mp4 copyright
