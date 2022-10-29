@@ -33,8 +33,6 @@ namespace DoViMuxer
         private static partial Regex FpsRegex();
         [GeneratedRegex("DOVI configuration record.*profile: (\\d).*compatibility id: (\\d)")]
         private static partial Regex DoViRegex();
-        [GeneratedRegex("\\-?\\d+\\.\\d{0,3}")]
-        private static partial Regex DalayRegex();
 
         public static async Task<List<Mediainfo>> ReadInfoAsync(string binary, string file)
         {
@@ -192,7 +190,8 @@ namespace DoViMuxer
                         if (node.ContainsKey("Delay"))
                         {
                             var str = node["Delay"]!.GetValue<string>();
-                            ele.Delay = Convert.ToInt64(DalayRegex().Match(str).Value.Replace(".", ""));
+                            var d = 1000 * double.Parse(str, System.Globalization.NumberStyles.AllowDecimalPoint, System.Globalization.CultureInfo.InvariantCulture);
+                            ele.Delay = (long)d;
                         }
                         else if (node.ContainsKey("extra") && node["extra"]!.AsObject().ContainsKey("Source_Delay"))
                         {
