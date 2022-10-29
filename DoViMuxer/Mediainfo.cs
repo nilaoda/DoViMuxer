@@ -61,17 +61,20 @@ namespace DoViMuxer
             return obj is Mediainfo mediainfo &&
                    GlobalTitle == mediainfo.GlobalTitle &&
                    GlobalCopyright == mediainfo.GlobalCopyright &&
-                   Forced == mediainfo.Forced &&
                    GlobalComment == mediainfo.GlobalComment &&
                    GlobalEncodingTool == mediainfo.GlobalEncodingTool &&
+                   GlobalHasCover == mediainfo.GlobalHasCover &&
                    IndexOfFile == mediainfo.IndexOfFile &&
                    IndexOfType == mediainfo.IndexOfType &&
                    FilePath == mediainfo.FilePath &&
                    DVProfile == mediainfo.DVProfile &&
                    DVComId == mediainfo.DVComId &&
-                   LangCode == mediainfo.LangCode &&
                    ExtendedLanguageTag == mediainfo.ExtendedLanguageTag &&
+                   LangCode == mediainfo.LangCode &&
                    Name == mediainfo.Name &&
+                   Delay == mediainfo.Delay &&
+                   Default == mediainfo.Default &&
+                   Forced == mediainfo.Forced &&
                    Id == mediainfo.Id &&
                    Text == mediainfo.Text &&
                    BaseInfo == mediainfo.BaseInfo &&
@@ -91,15 +94,18 @@ namespace DoViMuxer
             hash.Add(GlobalCopyright);
             hash.Add(GlobalComment);
             hash.Add(GlobalEncodingTool);
+            hash.Add(GlobalHasCover);
             hash.Add(IndexOfFile);
             hash.Add(IndexOfType);
             hash.Add(FilePath);
-            hash.Add(Forced);
             hash.Add(DVProfile);
             hash.Add(DVComId);
-            hash.Add(LangCode);
             hash.Add(ExtendedLanguageTag);
+            hash.Add(LangCode);
             hash.Add(Name);
+            hash.Add(Delay);
+            hash.Add(Default);
+            hash.Add(Forced);
             hash.Add(Id);
             hash.Add(Text);
             hash.Add(BaseInfo);
@@ -116,17 +122,22 @@ namespace DoViMuxer
         public Mediainfo() { }
         public Mediainfo(Mediainfo m)
         {
-            GlobalTitle = m.GlobalTitle; 
-            GlobalCopyright = m.GlobalCopyright; 
+            GlobalTitle = m.GlobalTitle;
+            GlobalCopyright = m.GlobalCopyright;
             GlobalComment = m.GlobalComment;
             GlobalEncodingTool = m.GlobalEncodingTool;
+            GlobalHasCover = m.GlobalHasCover;
             IndexOfFile = m.IndexOfFile;
             IndexOfType = m.IndexOfType;
             FilePath = m.FilePath;
             DVProfile = m.DVProfile;
             DVComId = m.DVComId;
+            ExtendedLanguageTag = m.ExtendedLanguageTag;
             LangCode = m.LangCode;
             Name = m.Name;
+            Delay = m.Delay;
+            Default = m.Default;
+            Forced = m.Forced;
             Id = m.Id;
             Text = m.Text;
             BaseInfo = m.BaseInfo;

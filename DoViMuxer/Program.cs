@@ -22,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.2");
+            Console.WriteLine("DoViMuxer v1.0.3");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -60,6 +60,12 @@ namespace DoViMuxer
             {
                 var mediaInfos = await MediainfoUtil.ReadInfoAsync(config.FFmpeg, input[i]);
                 await MediainfoUtil.ReadMediainfoAsync(config.Mediainfo, mediaInfos, option.Debug);
+                //如果同一个文件中所有轨道的Delay都相同，则全部置为0
+                if (mediaInfos.Select(m => m.Delay).Distinct().Count() == 1)
+                {
+                    mediaInfos.ForEach(m => m.Delay = 0);
+                }
+
                 dic[i] = mediaInfos;
                 if (mediaInfos.Any())
                 {
