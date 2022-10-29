@@ -65,6 +65,13 @@ namespace DoViMuxer
                 {
                     mediaInfos.ForEach(m => m.Delay = 0);
                 }
+                //如果视频有Delay，则给其他轨道做偏移
+                var v = mediaInfos.FirstOrDefault(m => m.Type == "Video");
+                if (v != null && v.Delay != 0)
+                {
+                    mediaInfos.ForEach(m => { if (m.Delay != 0 && !m.Equals(v)) m.Delay -= v.Delay; });
+                    v.Delay = 0;
+                }
 
                 dic[i] = mediaInfos;
                 if (mediaInfos.Any())
