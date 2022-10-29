@@ -24,8 +24,10 @@ namespace DoViMuxer
         private readonly static Option<string?> Copyright = new(new string[] { "-copyright" }, description: "Set mp4 copyright");
         private readonly static Option<string?> Title = new(new string[] { "-title" }, description: "Set mp4 title");
         private readonly static Option<string?> Tool = new(new string[] { "-tool" }, description: "Set mp4 encoding tool");
-        private readonly static Option<List<string>?> Metas = new(new string[] { "-meta" }, description: "Set mp4 track metadata to output file. Example:\r\n  -meta a:0:lang=eng:name=\"English (Original)\":elng=\"en-US\"\r\n  -meta 1:lang=jpn\r\nnote: lang: ISO 639-2, elng: RFC 4646 tags") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "[type:]index:key=value" };
-        private readonly static Option<List<string>?> Delays = new(new string[] { "-delay" }, description: "Set mp4 track delay (milliseconds) to output file. Example:\r\n  -delay a:0:-5000\r\n  -delay s:0:1000") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "[type:]index:time" };
+        private readonly static Option<List<string>?> Metas = new(new string[] { "-meta" }, description: "Set mp4 track metadata. Example:\r\n  -meta a:0:lang=eng:name=\"English (Original)\":elng=\"en-US\"\r\n  -meta 1:lang=jpn\r\nnote: lang: ISO 639-2, elng: RFC 4646 tags") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "[type:]index:key=value" };
+        private readonly static Option<List<string>?> Delays = new(new string[] { "-delay" }, description: "Set mp4 track delay (milliseconds). Example:\r\n  -delay a:0:-5000\r\n  -delay s:0:1000") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "[type:]index:time" };
+        private readonly static Option<List<string>?> Forceds = new(new string[] { "-forced" }, description: "Set mp4 subtitle track to [Forced]. Example:\r\n  -forced s:3") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "[s:]index" };
+        private readonly static Option<List<string>?> Defaults = new(new string[] { "-default" }, description: "Set mp4 audio or subtitle track to [Default]. Example:\r\n  -default s:3\r\n  -default a:1") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "[type:]index" };
         private readonly static Option<string?> FFmpeg = new(new string[] { "-ffmpeg" }, description: "Set ffmpeg path") { ArgumentHelpName = "FILE"};
         private readonly static Option<string?> MP4Box = new(new string[] { "-mp4box" }, description: "Set mp4box path") { ArgumentHelpName = "FILE" };
         private readonly static Option<string?> MP4Muxer = new(new string[] { "-mp4muxer" }, description: "Set mp4muxer path") { ArgumentHelpName = "FILE" };
@@ -53,6 +55,8 @@ namespace DoViMuxer
                     MP4Muxer = bindingContext.ParseResult.GetValueForOption(MP4Muxer),
                     Mediainfo = bindingContext.ParseResult.GetValueForOption(Mediainfo),
                     Delays = bindingContext.ParseResult.GetValueForOption(Delays),
+                    Forceds = bindingContext.ParseResult.GetValueForOption(Forceds),
+                    Defaults = bindingContext.ParseResult.GetValueForOption(Defaults),
                 };
 
                 return option;
@@ -63,7 +67,7 @@ namespace DoViMuxer
         {
             var rootCommand = new RootCommand("DoViMuxer. Tool to make Dolby Vison mp4.")
             {
-                Input, Output, Maps, Metas, Delays,
+                Input, Output, Maps, Metas, Delays, Forceds, Defaults,
                 Cover, Comment, Copyright, Title, Tool,
                 FFmpeg, MP4Box, MP4Muxer, Mediainfo,
                 Yes, Debug,

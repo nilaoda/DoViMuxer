@@ -122,14 +122,17 @@ namespace DoViMuxer
             return result;
         }
 
-        public static async Task ReadMediainfoAsync(string binary, List<Mediainfo> mediainfos)
+        public static async Task ReadMediainfoAsync(string binary, List<Mediainfo> mediainfos, bool showDetail = false)
         {
             if (mediainfos.Count == 0) return;
 
             try
             {
                 string file = mediainfos.First().FilePath!;
-                string cmd = "--Output=JSON \"" + file + "\"";
+                string cmd = "--Output=JSON --Language=raw \"" + file + "\"";
+
+                if (showDetail) Utils.LogGray($"{binary} {cmd}");
+
                 var p = Process.Start(new ProcessStartInfo()
                 {
                     FileName = binary,
@@ -170,7 +173,7 @@ namespace DoViMuxer
                     var ele = mediainfos[i];
                     var mediainfoType = ele.Type == "Subtitle" ? "Text" : ele.Type;
                     var index = ele.Type == "Subtitle" ? sTracks.IndexOf(ele) : ele.Type == "Audio" ? aTracks.IndexOf(ele) : 0;
-                    var node = infoArray.FirstOrDefault(a => a?["@type"]?.GetValue<string>() == mediainfoType && a?["@typeorder"]?.GetValue<string>() == $"{index + 1}")?.AsObject();
+                    var node = infoArray.Where(a => a?["@type"]?.GetValue<string>() == mediainfoType).ElementAtOrDefault(index)?.AsObject();
                     if (mediainfoType == "Video") node = infoArray.FirstOrDefault(a => a?["@type"]?.GetValue<string>() == mediainfoType)?.AsObject();
                     
                     if (node != null)
@@ -186,7 +189,7 @@ namespace DoViMuxer
                         }
                         if (node.ContainsKey("Delay"))
                         {
-                            ele.Delay = (long)Convert.ToDouble(node["Delay"]!.GetValue<string>()) * 1000;
+                            ele.Delay = Convert.ToInt64(node["Delay"]!.GetValue<string>().Replace(".", ""));
                         }
                         else if (node.ContainsKey("extra") && node["extra"]!.AsObject().ContainsKey("Source_Delay"))
                         {
@@ -195,9 +198,9 @@ namespace DoViMuxer
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ;//throw;
+                Utils.LogWarn("mediainfo: " + ex.Message);
             }
         }
     }

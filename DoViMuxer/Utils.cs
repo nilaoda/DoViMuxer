@@ -49,6 +49,13 @@ namespace DoViMuxer
             Console.ResetColor();
         }
 
+        public static void LogWarn(string message)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine(message);
+            Console.ResetColor();
+        }
+
         public static List<string> FormatGlobalInfo(string? globalTitle, string? globalCopyright, string? globalComment, string? globalEncodingTool)
         {
             var list = new List<string>();

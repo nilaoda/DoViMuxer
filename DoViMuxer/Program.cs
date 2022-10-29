@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Reflection;
+using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
@@ -20,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.1");
+            Console.WriteLine("DoViMuxer v1.0.2");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -30,9 +32,18 @@ namespace DoViMuxer
             if (!File.Exists(config.MP4Box)) throw new FileNotFoundException("mp4box not found! https://gpac.wp.imt.fr/downloads/pac-nightly-builds/");
             if (!File.Exists(config.FFmpeg)) throw new FileNotFoundException("ffmpeg not found! https://ffmpeg.org/download.html");
             if (!File.Exists(config.Mediainfo)) throw new FileNotFoundException("mediainfo not found! https://mediaarea.net/en/MediaInfo/Download");
+            if (!File.Exists(config.MP4Muxer)) throw new FileNotFoundException("mp4muxer not found! https://github.com/DolbyLaboratories/dlb_mp4base/tree/master/bin");
 
             if (!Utils.CheckFFmpegDOVI(config.FFmpeg)) throw new Exception("ffmpeg version must >= 5.0! https://ffmpeg.org/download.html");
             if (!Utils.CheckMP4Box(config.MP4Box)) throw new Exception("mp4box version must >= 2.0! https://gpac.wp.imt.fr/downloads/pac-nightly-builds/");
+
+            if (option.Debug)
+            {
+                Utils.LogGray($"ffmpeg: {config.FFmpeg}");
+                Utils.LogGray($"mp4box: {config.MP4Box}");
+                Utils.LogGray($"mediainfo: {config.Mediainfo}");
+                Utils.LogGray($"mp4muxer: {config.MP4Muxer}");
+            }
 
             var input = option.Inputs;
 
@@ -48,7 +59,7 @@ namespace DoViMuxer
             for (int i = 0; i < input.Count; i++)
             {
                 var mediaInfos = await MediainfoUtil.ReadInfoAsync(config.FFmpeg, input[i]);
-                await MediainfoUtil.ReadMediainfoAsync(config.Mediainfo, mediaInfos);
+                await MediainfoUtil.ReadMediainfoAsync(config.Mediainfo, mediaInfos, option.Debug);
                 dic[i] = mediaInfos;
                 if (mediaInfos.Any())
                 {
@@ -104,6 +115,24 @@ namespace DoViMuxer
                 }
             }
 
+            //分析用户自定义Forced
+            if (option.Forceds != null && option.Forceds.Count > 0)
+            {
+                foreach (var force in option.Forceds)
+                {
+                    SetForcedFromUser(force, selectedTracks);
+                }
+            }
+
+            //分析用户自定义Default
+            if (option.Defaults != null && option.Defaults.Count > 0)
+            {
+                foreach (var def in option.Defaults)
+                {
+                    SetDefaultFromUser(def, selectedTracks);
+                }
+            }
+
             var title = option.Title ?? selectedTracks.FirstOrDefault()?.GlobalTitle;
             var comment = option.Comment ?? selectedTracks.FirstOrDefault()?.GlobalComment;
             var tools = option.Tool ?? selectedTracks.FirstOrDefault()?.GlobalEncodingTool;
@@ -120,8 +149,6 @@ namespace DoViMuxer
 
             //校验视频流
             CheckVideo(selectedTracks, out Mediainfo vTrack);
-
-            if (vTrack.DolbyVison && !File.Exists(config.MP4Muxer)) throw new FileNotFoundException("mp4muxer not found! https://github.com/DolbyLaboratories/dlb_mp4base/tree/master/bin");
 
             var now = DateTime.Now.Ticks;
 
@@ -194,19 +221,21 @@ namespace DoViMuxer
                 tmpFiles.Add($"{now}_Subtitle{i}.srt");
             }
 
+            var tmpVideoName = "";
             if (vTrack.DolbyVison)
             {
                 var tag = vTrack.DVProfile == 5 ? "dvh1flag" : "hvc1flag";
 
                 Utils.LogColor("\r\nMux hevc to mp4...");
-                await Utils.RunCommandAsync(config.MP4Muxer, $"-i \"{now}.hevc\" -o \"{now}.hevc.mp4\" --{tag} 0 --dv-profile {vTrack.DVProfile} {(vTrack.DVComId == 0 ? "" : $" --dv-bl-compatible-id {vTrack.DVComId} ")} --mpeg4-comp-brand mp42,iso6,isom,msdh,dby1 --overwrite", option.Debug);
+                tmpVideoName = $"{now}.hevc.mp4";
+                await Utils.RunCommandAsync(config.MP4Muxer, $"-i \"{now}.hevc\" -o \"{tmpVideoName}\" --{tag} 0 --dv-profile {vTrack.DVProfile} {(vTrack.DVComId == 0 ? "" : $" --dv-bl-compatible-id {vTrack.DVComId} ")} --mpeg4-comp-brand mp42,iso6,isom,msdh,dby1 --overwrite", option.Debug);
             }
             else
             {
-                File.Move($"{now}.hevc", $"{now}.hevc.mp4");
+                tmpVideoName = $"{now}.hevc";
             }
 
-            tmpFiles.Add($"{now}.hevc.mp4");
+            tmpFiles.Add(tmpVideoName);
 
             if (selectedAudios.Any() || selectedSubtitle.Any())
                 Utils.LogColor("\r\nAdd audio / subtitle to mp4...");
@@ -239,7 +268,7 @@ namespace DoViMuxer
                     sb.Append($" -delay {mp4Index}={track.Delay} ");
             }
 
-            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -for-test  -noprog -add \"{now}.hevc.mp4#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
+            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -for-test  -noprog -add \"{tmpVideoName}#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
 
             Utils.LogColor("\r\nClean temp files...");
             foreach (var item in tmpFiles)
@@ -327,9 +356,71 @@ namespace DoViMuxer
             //-delay 0:1000
             var index = Convert.ToInt32(input.Split(':').First());
             if (list.Count <= index) throw new Exception("Can not find output track index: " + index);
-            if (list.Count > index)
+            list[index].Delay = Convert.ToInt64(input.Split(':').Last());
+        }
+
+        private static void SetForcedFromUser(string input, List<Mediainfo> list)
+        {
+            if (string.IsNullOrEmpty(input)) return;
+
+            //-forced s:0
+            var firstChar = input.First();
+            if (firstChar == 's')
             {
-                list[index].Delay = Convert.ToInt64(input.Split(':').Last());
+                var _index = Convert.ToInt32(input[2..].Split(':').First());
+                var _type = "Subtitle";
+                if (!list.Any(l => l.Type == _type)) throw new Exception($"Can not find output type {_type}");
+                if (list.Where(l => l.Type == _type).Count() <= _index) throw new Exception($"Can not find output {_type} track index: {_index}");
+                foreach (var item in list)
+                {
+                    if (item.Type == _type && item.IndexOfType == _index)
+                    {
+                        item.Forced = true;
+                        break;
+                    }
+                }
+                return;
+            }
+
+            //-forced 3
+            var index = Convert.ToInt32(input);
+            if (list.Count <= index) throw new Exception("Can not find output track index: " + index);
+            if (list[index].Type != "Subtitle") throw new Exception("Can not set Forced for " + list[index].Type);
+            list[index].Forced = true;
+        }
+
+        private static void SetDefaultFromUser(string input, List<Mediainfo> list)
+        {
+            if (string.IsNullOrEmpty(input)) return;
+
+            //-default s:0
+            var firstChar = input.First();
+            if (firstChar == 'a' || firstChar == 's')
+            {
+                var _index = Convert.ToInt32(input[2..].Split(':').First());
+                var _type = firstChar switch { 'a' => "Audio", 's' => "Subtitle", _ => "Error" };
+                if (!list.Any(l => l.Type == _type)) throw new Exception($"Can not find output type {_type}");
+                if (list.Where(l => l.Type == _type).Count() <= _index) throw new Exception($"Can not find output {_type} track index: {_index}");
+                foreach (var item in list)
+                {
+                    if (item.Type == _type && item.IndexOfType == _index)
+                        item.Default = true;
+                    else if (item.Type == _type)
+                        item.Default = false;
+                }
+                return;
+            }
+
+            //-default 3
+            var index = Convert.ToInt32(input);
+            if (list.Count <= index) throw new Exception("Can not find output track index: " + index);
+            var type = list[index].Type;
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (list[i].Type == type && i == index)
+                    list[i].Default = true;
+                else if (list[i].Type == type)
+                    list[i].Default = false;
             }
         }
 

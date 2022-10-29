@@ -50,7 +50,10 @@ namespace DoViMuxer
 
         public string? ToShortString()
         {
-            return string.Join(", ", new List<string?> { Type, BaseInfo, Resolution, Fps, Bitrate, LangCode, ExtendedLanguageTag, Name }.Where(i => !string.IsNullOrEmpty(i))) + (Delay==0?"": $", Delay: {Delay}ms");
+            return string.Join(", ", new List<string?> { Type, BaseInfo, Resolution, Fps, Bitrate, LangCode, ExtendedLanguageTag, Name }.Where(i => !string.IsNullOrEmpty(i)))
+                + (Delay == 0 ? "" : $", Delay: {Delay}ms")
+                + (Forced ? " [Forced]" : "")
+                + (Type != "Video" && Default ? " [Default]" : "");
         }
 
         public override bool Equals(object? obj)
@@ -58,6 +61,7 @@ namespace DoViMuxer
             return obj is Mediainfo mediainfo &&
                    GlobalTitle == mediainfo.GlobalTitle &&
                    GlobalCopyright == mediainfo.GlobalCopyright &&
+                   Forced == mediainfo.Forced &&
                    GlobalComment == mediainfo.GlobalComment &&
                    GlobalEncodingTool == mediainfo.GlobalEncodingTool &&
                    IndexOfFile == mediainfo.IndexOfFile &&
@@ -90,6 +94,7 @@ namespace DoViMuxer
             hash.Add(IndexOfFile);
             hash.Add(IndexOfType);
             hash.Add(FilePath);
+            hash.Add(Forced);
             hash.Add(DVProfile);
             hash.Add(DVComId);
             hash.Add(LangCode);

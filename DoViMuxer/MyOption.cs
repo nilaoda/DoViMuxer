@@ -25,6 +25,14 @@ namespace DoViMuxer
         /// </summary>
         public List<string>? Delays { get; set; }
         /// <summary>
+        /// See: <see cref="CommandInvoker.Forceds"/>.
+        /// </summary>
+        public List<string>? Forceds { get; set; }
+        /// <summary>
+        /// See: <see cref="CommandInvoker.Defaults"/>.
+        /// </summary>
+        public List<string>? Defaults { get; set; }
+        /// <summary>
         /// See: <see cref="CommandInvoker.Output"/>.
         /// </summary>
         public string? Output { get; set; }
