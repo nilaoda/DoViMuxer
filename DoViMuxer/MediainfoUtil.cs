@@ -179,6 +179,7 @@ namespace DoViMuxer
                     if (node != null)
                     {
                         if (ele.Type != "Video") ele.Name = node["Title"]?.GetValue<string>();
+                        if (ele.Type != "Video") ele.ExtendedLanguageTag = node["Language"]?.GetValue<string>();
                         if (node.ContainsKey("Default"))
                         {
                             ele.Default = node["Default"]!.GetValue<string>() == "Yes";
