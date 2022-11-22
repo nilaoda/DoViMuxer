@@ -18,7 +18,7 @@ Command line tool to make Dolby Vison mp4.
     Read track info, extract stream
 * [mp4box](https://gpac.wp.imt.fr/downloads/gpac-nightly-builds/) (>=2.1)  
     Mux video, audio, subtitle together
-* [mediainfo](https://mediaarea.net/en/MediaInfo/Download) (latest CLI version)  
+* [mediainfo](https://mediaarea.net/download/snapshots/binary/mediainfo/) (latest CLI version)  
     Read metadata
 * [mp4muxer](https://github.com/DolbyLaboratories/dlb_mp4base/tree/master/bin)  
     Mux ES to DoVi mp4

@@ -18,7 +18,7 @@
     读取轨道信息, 抽取轨道
 * [mp4box](https://gpac.wp.imt.fr/downloads/gpac-nightly-builds/) (>=2.1)  
     混流视频、音轨和字幕
-* [mediainfo](https://mediaarea.net/en/MediaInfo/Download) (latest CLI version)  
+* [mediainfo](https://mediaarea.net/download/snapshots/binary/mediainfo/) (latest CLI version)  
     读取元数据
 * [mp4muxer](https://github.com/DolbyLaboratories/dlb_mp4base/tree/master/bin)  
     将 ES 流封装到 mp4
