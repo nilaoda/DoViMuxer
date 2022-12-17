@@ -81,10 +81,21 @@ namespace DoViMuxer
                     continue;
                 }
 
-                if (info.Type == "Video" && !info.Text.StartsWith("hevc"))
+                if (info.Type == "Video")
                 {
-                    index++;
-                    continue;
+                    if (info.Text.StartsWith("hevc"))
+                    {
+                        info.H264 = false;
+                    }
+                    else if (info.Text.StartsWith("h264"))
+                    {
+                        info.H264 = true;
+                    }
+                    else
+                    {
+                        index++;
+                        continue;
+                    }
                 }
 
                 if (info.Type == "Video" && DoViRegex().IsMatch(output))

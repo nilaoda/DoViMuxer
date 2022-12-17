@@ -41,6 +41,7 @@ namespace DoViMuxer
         public string? Type { get; set; }
         public bool DolbyVison { get; set; }
         public bool HDR { get; set; }
+        public bool H264 { get; set; }
 
 
         public override string? ToString()
@@ -84,7 +85,8 @@ namespace DoViMuxer
                    Fps == mediainfo.Fps &&
                    Type == mediainfo.Type &&
                    DolbyVison == mediainfo.DolbyVison &&
-                   HDR == mediainfo.HDR;
+                   HDR == mediainfo.HDR &&
+                   H264 == mediainfo.H264;
         }
 
         public override int GetHashCode()
@@ -116,6 +118,7 @@ namespace DoViMuxer
             hash.Add(Type);
             hash.Add(DolbyVison);
             hash.Add(HDR);
+            hash.Add(H264);
             return hash.ToHashCode();
         }
 
@@ -147,6 +150,7 @@ namespace DoViMuxer
             Type = m.Type;
             DolbyVison = m.DolbyVison;
             HDR = m.HDR;
+            H264 = m.H264;
         }
     }
 }

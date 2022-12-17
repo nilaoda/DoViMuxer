@@ -22,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.4");
+            Console.WriteLine("DoViMuxer v1.0.5");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -209,8 +209,9 @@ namespace DoViMuxer
             }
 
             Utils.LogColor("\r\nExtract video track...");
-            await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -c copy -vbsf hevc_mp4toannexb -f hevc \"{now}.hevc\"", option.Debug);
-            tmpFiles.Add($"{now}.hevc");
+            var videoExt = vTrack.H264 ? "h264" : "hevc";
+            await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -c copy -vbsf {(vTrack.H264 ? "h264_mp4toannexb" : "hevc_mp4toannexb")} -f {videoExt} \"{now}.{videoExt}\"", option.Debug);
+            tmpFiles.Add($"{now}.{videoExt}");
 
             var selectedAudios = selectedTracks.Where(m => m.Type == "Audio");
             for (int i = 0; i < selectedAudios.Count(); i++)
@@ -239,13 +240,13 @@ namespace DoViMuxer
             {
                 var tag = vTrack.DVProfile == 5 ? "dvh1flag" : "hvc1flag";
 
-                Utils.LogColor("\r\nMux hevc to mp4...");
-                tmpVideoName = $"{now}.hevc.mp4";
-                await Utils.RunCommandAsync(config.MP4Muxer, $"-i \"{now}.hevc\" -o \"{tmpVideoName}\" --{tag} 0 --dv-profile {vTrack.DVProfile} {(vTrack.DVComId == 0 ? "" : $" --dv-bl-compatible-id {vTrack.DVComId} ")} --mpeg4-comp-brand mp42,iso6,isom,msdh,dby1 --overwrite", option.Debug);
+                Utils.LogColor($"\r\nMux {videoExt} to mp4...");
+                tmpVideoName = $"{now}.{videoExt}.mp4";
+                await Utils.RunCommandAsync(config.MP4Muxer, $"-i \"{now}.{videoExt}\" -o \"{tmpVideoName}\" --{tag} 0 --dv-profile {vTrack.DVProfile} {(vTrack.DVComId == 0 ? "" : $" --dv-bl-compatible-id {vTrack.DVComId} ")} --mpeg4-comp-brand mp42,iso6,isom,msdh,dby1 --overwrite", option.Debug);
             }
             else
             {
-                tmpVideoName = $"{now}.hevc";
+                tmpVideoName = $"{now}.{videoExt}";
             }
 
             tmpFiles.Add(tmpVideoName);
@@ -538,7 +539,7 @@ namespace DoViMuxer
             }
             else if (vTrack == null)
             {
-                throw new Exception("Must input video(hevc) track!");
+                throw new Exception("Must input video track!");
             }
             if (vTrack.DolbyVison && vTrack.DVProfile != 5 && vTrack.DVProfile != 8)
             {

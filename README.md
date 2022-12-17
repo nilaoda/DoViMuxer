@@ -149,4 +149,3 @@ elng=zh-AAC => 中文（AAC）
 # Todo
 * [ ] Dual layer DoVi
 * [ ] Chapters copy 
-* [ ] AVC input 
