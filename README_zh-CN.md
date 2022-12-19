@@ -76,6 +76,7 @@ Options:
   -mp4muxer <FILE>                设置 mp4muxer 路径
   -mediainfo <FILE>               设置 mediainfo 路径
   -y                              覆盖文件 [default: False]
+  --nochap                        跳过章节读取 [default: False]
   --debug                         展示详细信息 [default: False]
   --version                       Show version information
   -?, -h, --help                  Show help and usage information
@@ -146,4 +147,3 @@ elng=zh-AAC => 中文（AAC）
 
 # Todo
 * [ ] 适配双层杜比视界
-* [ ] 章节复制 
