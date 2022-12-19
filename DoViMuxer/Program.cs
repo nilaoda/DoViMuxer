@@ -22,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.5");
+            Console.WriteLine("DoViMuxer v1.0.6");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -55,9 +55,16 @@ namespace DoViMuxer
             Utils.LogColor("Reading inputs...");
 
             var dic = new Dictionary<int, List<Mediainfo>>();
+            var chapterDic = new Dictionary<int, List<Chapter>>();
 
             for (int i = 0; i < input.Count; i++)
             {
+                if (!option.NoChap)
+                {
+                    //读取chapter
+                    chapterDic[i] = await MediainfoUtil.ReadChapterAsync(config.FFmpeg, input[i]);
+                }
+
                 var mediaInfos = await MediainfoUtil.ReadInfoAsync(config.FFmpeg, input[i]);
                 await MediainfoUtil.ReadMediainfoAsync(config.Mediainfo, mediaInfos, option.Debug);
                 //如果同一个文件中所有轨道的Delay都相同，则全部置为0
@@ -84,6 +91,21 @@ namespace DoViMuxer
                         Console.WriteLine($"\t{item}");
                     }
                 }
+            }
+
+            //写入章节信息
+            var chapterTxt = "";
+            if (chapterDic.Any(c => c.Value.Count > 0))
+            {
+                var list = chapterDic.First(c => c.Value.Count > 0).Value;
+                StringBuilder w = new();
+                Console.WriteLine();
+                foreach (var item in list)
+                {
+                    w.AppendLine($"{item}");
+                    Console.WriteLine($"\tChapter: {item}");
+                }
+                chapterTxt = w.ToString();
             }
 
             var allMediainfos = dic.SelectMany(d => d.Value);
@@ -158,6 +180,16 @@ namespace DoViMuxer
             {
                 var item = selectedTracks[i];
                 Console.WriteLine($"\t[{i}]: {input.IndexOf(item.FilePath!)}, {item.ToShortString()}");
+            }
+
+            if (chapterDic.Any(c => c.Value.Count > 0))
+            {
+                var list = chapterDic.First(c => c.Value.Count > 0).Value;
+                Console.WriteLine();
+                foreach (var item in list)
+                {
+                    Console.WriteLine($"\tChapter: {item}");
+                }
             }
 
             //校验视频流
@@ -282,7 +314,16 @@ namespace DoViMuxer
                     sb.Append($" -delay {mp4Index}={track.Delay} ");
             }
 
-            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -for-test  -noprog -add \"{tmpVideoName}#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
+            //添加章节信息
+            var chapArg = "";
+            if (!string.IsNullOrEmpty(chapterTxt))
+            {
+                File.WriteAllText($"{now}.txt", chapterTxt);
+                tmpFiles.Add($"{now}.txt");
+                chapArg = $" -chap {now}.txt ";
+            }
+
+            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -for-test {chapArg} -noprog -add \"{tmpVideoName}#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
 
             Utils.LogColor("\r\nClean temp files...");
             foreach (var item in tmpFiles)

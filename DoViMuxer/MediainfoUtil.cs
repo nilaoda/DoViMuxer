@@ -33,6 +33,8 @@ namespace DoViMuxer
         private static partial Regex FpsRegex();
         [GeneratedRegex("DOVI configuration record.*profile: (\\d).*compatibility id: (\\d)")]
         private static partial Regex DoViRegex();
+        [GeneratedRegex("\\[CHAPTER\\]\\nTIMEBASE=(.*?)\\nSTART=(\\d+)\\nEND=(\\d+)\\ntitle=(.*)")]
+        private static partial Regex ChapterRegex();
 
         public static async Task<List<Mediainfo>> ReadInfoAsync(string binary, string file)
         {
@@ -216,6 +218,59 @@ namespace DoViMuxer
             {
                 Utils.LogWarn("mediainfo: " + ex.Message);
             }
+        }
+
+        public static async Task<List<Chapter>> ReadChapterAsync(string binary, string file, bool showDetail = false)
+        {
+            var list = new List<Chapter>();
+            try
+            {
+                var outFile = Path.GetTempFileName() + ".txt";
+                var cmd = $"-loglevel quiet -i \"{file}\" -f ffmetadata -y \"{outFile}\"";
+
+                if (showDetail) Utils.LogGray($"{binary} {cmd}");
+
+                var p = Process.Start(new ProcessStartInfo()
+                {
+                    FileName = binary,
+                    Arguments = cmd,
+                    UseShellExecute = false
+                })!;
+                await p.WaitForExitAsync();
+                await Task.Delay(100);
+
+                if (File.Exists(outFile))
+                {
+                    var text = await File.ReadAllTextAsync(outFile);
+                    if (ChapterRegex().IsMatch(text))
+                    {
+                        foreach (Match m in ChapterRegex().Matches(text))
+                        {
+                            var timescaleStr = m.Groups[1].Value;
+                            var timescale = 1.0;
+                            if (timescaleStr.Contains("/"))
+                            {
+                                timescale = Convert.ToInt32(timescaleStr.Split('/')[0]) / (double)Convert.ToInt32(timescaleStr.Split('/')[1]);
+                            }
+
+                            var start = Convert.ToInt64(m.Groups[2].Value) * timescale;
+                            var end = Convert.ToInt64(m.Groups[3].Value) * timescale;
+                            var title = m.Groups[4].Value;
+                            list.Add(new Chapter()
+                            {
+                                Title = title,
+                                Start = start,
+                                End = end,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Utils.LogWarn("read chapter: " + ex.Message);
+            }
+            return list;
         }
     }
 }

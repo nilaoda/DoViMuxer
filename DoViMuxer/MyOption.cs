@@ -41,6 +41,10 @@ namespace DoViMuxer
         /// </summary>
         public bool Debug { get; set; }
         /// <summary>
+        /// See: <see cref="CommandInvoker.NoChap"/>.
+        /// </summary>
+        public bool NoChap { get; set; }
+        /// <summary>
         /// See: <see cref="CommandInvoker.Yes"/>.
         /// </summary>
         public bool Yes { get; set; }

@@ -17,6 +17,7 @@ namespace DoViMuxer
         private readonly static Argument<string> Output = new(name: "output", description: "File output name", getDefaultValue: () => "");
         private readonly static Option<List<string>> Input = new(new string[] { "-i" }, description: "Add input(s)") { IsRequired = true, Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "FILE" };
         private readonly static Option<bool> Debug = new(new string[] { "--debug" }, description: "Show details", getDefaultValue: () => false);
+        private readonly static Option<bool> NoChap = new(new string[] { "--nochap" }, description: "Skip chapters copy", getDefaultValue: () => false);
         private readonly static Option<bool> Yes = new(new string[] { "-y" }, description: "Overwrite", getDefaultValue: () => false);
         private readonly static Option<List<string>?> Maps = new(new string[] { "-map" }, description: "Select and re-order tracks. Example:\r\n  -map 0:0   Input 0, track 0\r\n  -map 0:a:0 Input 0, first audio track") { Arity = ArgumentArity.OneOrMore, AllowMultipleArgumentsPerToken = false, ArgumentHelpName = "file[:type[:index]]" };
         private readonly static Option<string?> Cover = new(new string[] { "-cover" }, description: "Set mp4 cover image") { ArgumentHelpName = "FILE" };
@@ -42,6 +43,7 @@ namespace DoViMuxer
                     Output = bindingContext.ParseResult.GetValueForArgument(Output),
                     Inputs = bindingContext.ParseResult.GetValueForOption(Input)!,
                     Debug = bindingContext.ParseResult.GetValueForOption(Debug),
+                    NoChap = bindingContext.ParseResult.GetValueForOption(NoChap),
                     Yes = bindingContext.ParseResult.GetValueForOption(Yes),
                     Maps = bindingContext.ParseResult.GetValueForOption(Maps),
                     Cover = bindingContext.ParseResult.GetValueForOption(Cover),
@@ -70,7 +72,7 @@ namespace DoViMuxer
                 Input, Output, Maps, Metas, Delays, Forceds, Defaults,
                 Cover, Comment, Copyright, Title, Tool,
                 FFmpeg, MP4Box, MP4Muxer, Mediainfo,
-                Yes, Debug,
+                Yes, NoChap, Debug,
             };
 
             rootCommand.TreatUnmatchedTokensAsErrors = true;
