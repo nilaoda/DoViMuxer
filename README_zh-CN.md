@@ -76,6 +76,8 @@ Options:
   -mp4muxer <FILE>                设置 mp4muxer 路径
   -mediainfo <FILE>               设置 mediainfo 路径
   -y                              覆盖文件 [default: False]
+  -dvhe                           优先使用 'dvhe' 而不是 'dvh1' [default: False]
+  -hev1                           优先使用 'hev1' 而不是 'hvc1' [default: False]
   --nochap                        跳过章节读取 [default: False]
   --debug                         展示详细信息 [default: False]
   --version                       Show version information

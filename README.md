@@ -78,6 +78,8 @@ Options:
   -mp4muxer <FILE>                Set mp4muxer path
   -mediainfo <FILE>               Set mediainfo path
   -y                              Overwrite [default: False]
+  -dvhe                           Prefer 'dvhe' rather than 'dvh1' [default: False]
+  -hev1                           Prefer 'hev1' rather than 'hvc1' [default: False]
   --nochap                        Skip chapters copy [default: False]
   --debug                         Show details [default: False]
   --version                       Show version information
