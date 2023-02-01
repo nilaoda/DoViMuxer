@@ -22,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.6");
+            Console.WriteLine("DoViMuxer v1.0.7");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -323,7 +323,15 @@ namespace DoViMuxer
                 chapArg = $" -chap {now}.txt ";
             }
 
-            await Utils.RunCommandAsync(config.MP4Box, $"-inter 500 -for-test {chapArg} -noprog -add \"{tmpVideoName}#1:name=:group=1\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
+            //flag设置
+            var flagArg = "";
+            if (!vTrack.H264)
+            {
+                if (vTrack.DolbyVison && vTrack.DVProfile == 5 && option.DvheFlag) flagArg = ":stype=dvhe";
+                if (!vTrack.DolbyVison && option.Hev1Flag) flagArg = ":stype=hev1";
+            }
+
+            await Utils.RunCommandAsync(config.MP4Box, $"-tmp \"{Environment.CurrentDirectory}\" -inter 500 -for-test {chapArg} -noprog -add \"{tmpVideoName}#1:name=:group=1{flagArg}\" {sb} -brand mp42isom -ab iso6 -ab msdh -ab dby1 -itags tool=\"{tools}\":title=\"{title}\":comment=\"{comment}\":copyright=\"{copyright}\":cover=\"{cover}\" -new \"{output}\"", option.Debug);
 
             Utils.LogColor("\r\nClean temp files...");
             foreach (var item in tmpFiles)

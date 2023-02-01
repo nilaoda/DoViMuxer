@@ -41,6 +41,14 @@ namespace DoViMuxer
         /// </summary>
         public bool Debug { get; set; }
         /// <summary>
+        /// See: <see cref="CommandInvoker.DvheFlag"/>.
+        /// </summary>
+        public bool DvheFlag { get; set; }
+        /// <summary>
+        /// See: <see cref="CommandInvoker.Hev1Flag"/>.
+        /// </summary>
+        public bool Hev1Flag { get; set; }
+        /// <summary>
         /// See: <see cref="CommandInvoker.NoChap"/>.
         /// </summary>
         public bool NoChap { get; set; }
