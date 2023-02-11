@@ -260,11 +260,16 @@ namespace DoViMuxer
                 Utils.LogColor($"{(i == 0 ? "\r\n" : "")}Extract subtile track {i}...");
                 var sTrack = selectedSubtitle.ElementAt(i);
                 await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{sTrack.FilePath}\" -map_metadata -1 -map 0:{sTrack.IndexOfFile} \"{now}_Subtitle{i}.srt\"", option.Debug);
-                var text = File.ReadAllText($"{now}_Subtitle{i}.srt");
+                var file = $"{now}_Subtitle{i}.srt";
+                var text = File.ReadAllText(file);
+                if (text.Trim().Length == 0)
+                {
+                    text = "1\r\n00:00:00,000 --> 00:00:01,000"; //空字幕
+                }
                 //remove font tags
                 text = TagRegex().Replace(text, "$1");
-                File.WriteAllText($"{now}_Subtitle{i}.srt", text, new UTF8Encoding(false));
-                tmpFiles.Add($"{now}_Subtitle{i}.srt");
+                File.WriteAllText(file, text, new UTF8Encoding(false));
+                tmpFiles.Add(file);
             }
 
             var tmpVideoName = "";
