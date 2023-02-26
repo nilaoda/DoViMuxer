@@ -10,7 +10,7 @@ namespace DoViMuxer
 {
     internal partial class Utils
     {
-        [GeneratedRegex("libavutil\\s+(\\d+)\\. (\\d+)\\.")]
+        [GeneratedRegex("libavutil\\s+(\\d+)\\. +(\\d+)\\.")]
         private static partial Regex LibavutilRegex();
         [GeneratedRegex("GPAC version (\\d+)\\.")]
         private static partial Regex MP4boxRegex();
