@@ -22,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.0.9");
+            Console.WriteLine("DoViMuxer v1.1.0");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
