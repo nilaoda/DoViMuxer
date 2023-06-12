@@ -250,7 +250,7 @@ namespace DoViMuxer
             {
                 Utils.LogColor($"{(i == 0 ? "\r\n" : "")}Extract audio track {i}...");
                 var aTrack = selectedAudios.ElementAt(i);
-                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{aTrack.FilePath}\" -map_metadata -1 -map 0:{aTrack.IndexOfFile} -c copy \"{now}_Audio{i}.{aTrack.Ext}\"", option.Debug);
+                await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{aTrack.FilePath}\" -map_metadata -1 -map 0:{aTrack.IndexOfFile} -f mp4 -c copy \"{now}_Audio{i}.{aTrack.Ext}\"", option.Debug);
                 tmpFiles.Add($"{now}_Audio{i}.{aTrack.Ext}");
             }
 
