@@ -22,7 +22,7 @@ namespace DoViMuxer
 
         private async static Task DoWorkAsync(MyOption option)
         {
-            Console.WriteLine("DoViMuxer v1.1.0");
+            Console.WriteLine("DoViMuxer v1.1.1");
             var config = new Config();
             config.MP4Box = option.MP4Box ?? Utils.FindExecutable("mp4box") ?? Utils.FindExecutable("MP4box") ?? config.MP4Box;
             config.MP4Muxer = option.MP4Muxer ?? Utils.FindExecutable("mp4muxer") ?? config.MP4Muxer;
@@ -544,17 +544,31 @@ namespace DoViMuxer
                 }
                 else if (arr.Length == 2)
                 {
-                    // -map 0:v
-                    var type = arr[1] switch
+                    if (int.TryParse(arr[1], out int index))
                     {
-                        "a" => "Audio",
-                        "v" => "Video",
-                        "s" => "Subtitle",
-                        _ => "Error"
-                    };
-                    var result = dic[Convert.ToInt32(arr[0])].Where(m => m.Type == type);
-                    if (result.Any()) return result;
-                    throw new Exception($"Failed to select {type} from input {arr[0]}");
+                        // -map 0:0
+                        var result = dic[Convert.ToInt32(arr[0])];
+                        if (result.Any() && result.Count() > index)
+                        {
+                            result = new List<Mediainfo>() { result.ElementAt(index) };
+                        }
+                        if (result.Any()) return result;
+                        throw new Exception($"Failed to select track from input {arr[0]}");
+                    }
+                    else
+                    {
+                        // -map 0:v
+                        var type = arr[1] switch
+                        {
+                            "a" => "Audio",
+                            "v" => "Video",
+                            "s" => "Subtitle",
+                            _ => "Error"
+                        };
+                        var result = dic[Convert.ToInt32(arr[0])].Where(m => m.Type == type);
+                        if (result.Any()) return result;
+                        throw new Exception($"Failed to select {type} from input {arr[0]}");
+                    }
                 }
                 else if (arr.Length == 3)
                 {
