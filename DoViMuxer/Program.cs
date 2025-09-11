@@ -242,7 +242,7 @@ namespace DoViMuxer
 
             Utils.LogColor("\r\nExtract video track...");
             var videoExt = vTrack.H264 ? "h264" : "hevc";
-            await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -c copy -vbsf {(vTrack.H264 ? "h264_mp4toannexb" : "hevc_mp4toannexb")} -f {videoExt} \"{now}.{videoExt}\"", option.Debug);
+            await Utils.RunCommandAsync(config.FFmpeg, $"-nostdin -loglevel warning -i \"{vTrack.FilePath}\" -c copy -bsf {(vTrack.H264 ? "h264_mp4toannexb" : "hevc_mp4toannexb")} -f {videoExt} \"{now}.{videoExt}\"", option.Debug);
             tmpFiles.Add($"{now}.{videoExt}");
 
             var selectedAudios = selectedTracks.Where(m => m.Type == "Audio");
